@@ -1,17 +1,26 @@
+<!DOCTYPE html>
 <html>
-    <head>
-    <meta charset="UTF-8" />
-   <link rel="stylesheet" type="text/css" href="style.css">
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    </head>
-    
-    <body>
-    <h1 class="animated fadeInRightBig">2048</h1>   
-    <p>Use the buttons or arrow keys to play game. Press 'N' to start a new game.</p>
-    <div id="main"></div>
-    <script type="text/babel" src="script.js">
-    </script>   
-    </body>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+</head>
+
+<body>
+    <h1>2048</h1>
+    <h2>Best score: <span id="best_score">0</span></h2>
+    <hr>
+    <h2>Score: <span id="score">0</span></h2>
+    <div class="back-button">
+        <button class="btn btn-3" id="back_score">Шаг назад</button>
+        <button class="btn btn-2" id="newGamedBtn">Новая игра</button>
+    </div>
+    <div id="board">
+    </div>
+
+</body>
+
 </html>

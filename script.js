@@ -1,361 +1,297 @@
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    
-    this.state = {
-      board: null,
-      score: 0,
-      gameOver: false,
-      message: null
-    };
-  }
-  
-  // Create board with two random coordinate numbers
-  initBoard() {
-    let board = [[0,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,0]];
-    // let board = [];
-    // for (let i = 0; i < n; i++) {
-    //   const row = [];
-    //   for (let j = 0; j < n; j++) {
-    //     row.push(0);
-    //   }
-    //   board.push(row);
-    // }
-    board = this.placeRandom(this.placeRandom(board));
-    this.setState({board, score: 0, gameOver: false, message: null});
-  }
-  
-  // Get all blank coordinates from board
-  getBlankCoordinates(board) {
-    const blankCoordinates = [];
-    
-    for (let r = 0; r < board.length; r++) {
-      for (let c = 0; c < board[r].length; c++) {
-        if (board[r][c] === 0) {blankCoordinates.push([r, c])}
-      }
-    }
-            
-    return blankCoordinates;
-  }
-  
-  // Grab random start number
-  randomStartingNumber() {
-    const startingNumbers = [2,4];
-    const randomNumber = startingNumbers[Math.floor(Math.random() * startingNumbers.length)];
-    return randomNumber;
-  }
-  
-  // Place random starting number on an empty coordinate
-  placeRandom(board) {
-    const blankCoordinates = this.getBlankCoordinates(board);
-    const randomCoordinate = blankCoordinates[Math.floor(Math.random() * blankCoordinates.length)];
-    const randomNumber = this.randomStartingNumber();
-    board[randomCoordinate[0]][randomCoordinate[1]] = randomNumber;
-    return board;
-  }
-  
-  // Compares two boards to check for movement
-  boardMoved(original, updated) {
-    return (JSON.stringify(updated) !== JSON.stringify(original)) ? true : false;
-  }
-  
-  // Moves board depending on direction and checks for game over
-  move(direction) {
-    if (!this.state.gameOver) {
-      if (direction === 'up') {
-        const movedUp = this.moveUp(this.state.board);
-        if (this.boardMoved(this.state.board, movedUp.board)) {
-          const upWithRandom = this.placeRandom(movedUp.board);
-          
-          if (this.checkForGameOver(upWithRandom)) {
-            this.setState({board: upWithRandom, gameOver: true, message: 'Game over!'});
-          } else {
-            this.setState({board: upWithRandom, score: this.state.score += movedUp.score});  
-          }
-        }
-      } else if (direction === 'right') {
-        const movedRight = this.moveRight(this.state.board);
-        if (this.boardMoved(this.state.board, movedRight.board)) {
-          const rightWithRandom = this.placeRandom(movedRight.board);
-          
-          if (this.checkForGameOver(rightWithRandom)) {
-            this.setState({board: rightWithRandom, gameOver: true, message: 'Game over!'});
-          } else {
-            this.setState({board: rightWithRandom, score: this.state.score += movedRight.score});  
-          }
-        }
-      } else if (direction === 'down') {
-        const movedDown = this.moveDown(this.state.board);
-        if (this.boardMoved(this.state.board, movedDown.board)) {
-          const downWithRandom = this.placeRandom(movedDown.board);
-          
-          if (this.checkForGameOver(downWithRandom)) {
-            this.setState({board: downWithRandom, gameOver: true, message: 'Game over!'});
-          } else {
-            this.setState({board: downWithRandom, score: this.state.score += movedDown.score});
-          }
-        }
-      } else if (direction === 'left') {
-        const movedLeft = this.moveLeft(this.state.board);
-        if (this.boardMoved(this.state.board, movedLeft.board)) {
-          const leftWithRandom = this.placeRandom(movedLeft.board);
-          
-          if (this.checkForGameOver(leftWithRandom)) {
-            this.setState({board: leftWithRandom, gameOver: true, message: 'Game over!'});  
-          } else {
-            this.setState({board: leftWithRandom, score: this.state.score += movedLeft.score});
-          }
-        }
-      }
+let board;
+let back_board;
+let score = parseInt(localStorage.getItem("score")) > 0 ? parseInt(localStorage.getItem("score")) : 0;
+let rows = 4;
+let columns = 4;
+let best_score = parseInt(localStorage.getItem("best_score")) > 0 ? parseInt(localStorage.getItem("best_score")) : 0;
+let list_road_board = [];
+
+window.onload = function() {
+    setGame();
+    const back_boardBtn = document.getElementById("back_score");
+    back_boardBtn.addEventListener("click", () => {
+        if (score > 0 && list_road_board.length > 0) {
+            for (let i = 0; i < 4; i++) {
+                for (let j = 0; j < 4; j++) {
+                    board[i][j] = list_road_board[list_road_board.length - 1].list[i][j];
+                }
+            }
+            score = list_road_board[list_road_board.length - 1].score;
+            document.getElementById("score").innerText = score;
+            list_road_board.pop();
+            updateBoardView();
+
+        };
+    });
+
+    const newGamedBtn = document.getElementById("newGamedBtn");
+    newGamedBtn.addEventListener("click", () => {
+        console.log("New game")
+        resetGame();
+        board = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ];
+
+        back_board = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ];
+        score = 0;
+        document.getElementById("best_score").innerText = best_score;
+        document.getElementById("score").innerText = score;
+        updateBoardView();
+    });
+}
+
+
+
+function setGame() {
+    console.log("setGame()")
+    console.log("score -", score)
+    console.log("local - score", localStorage.getItem("score"))
+    console.log("local - board", localStorage.getItem("board"))
+    if (score > 0) {
+        loadGame()
     } else {
-      this.setState({message: 'Game over. Please start a new game.'});
-    }
-  }
-  
-  moveUp(inputBoard) {
-    let rotatedRight = this.rotateRight(inputBoard);
-    let board = [];
-    let score = 0;
+        resetGame();
+        board = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ];
 
-    // Shift all numbers to the right
-    for (let r = 0; r < rotatedRight.length; r++) {
-      let row = [];
-      for (let c = 0; c < rotatedRight[r].length; c++) {
-        let current = rotatedRight[r][c];
-        (current === 0) ? row.unshift(current) : row.push(current);
-      }
-      board.push(row);
+        back_board = [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ];
     }
+    document.getElementById("best_score").innerText = best_score;
+    document.getElementById("score").innerText = score;
+    updateBoardView();
+    // Добавляем сохранение игры при инициализации
+}
 
-    // Combine numbers and shift to right
-    for (let r = 0; r < board.length; r++) {
-      for (let c = board[r].length - 1; c >= 0; c--) {
-        if (board[r][c] > 0 && board[r][c] === board[r][c - 1]) {
-          board[r][c] = board[r][c] * 2;
-          board[r][c - 1] = 0;
-          score += board[r][c];
-        } else if (board[r][c] === 0 && board[r][c - 1] > 0) {
-          board[r][c] = board[r][c - 1];
-          board[r][c - 1] = 0;
+document.addEventListener('keyup', (e) => {
+    let new_list = {
+        score: 0,
+        list: [
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
+        ]
+    };
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            new_list.list[i][j] = board[i][j];
         }
-      }
+    }
+    new_list.score = score;
+    list_road_board.push(new_list);
+    console.log("list_road_board----", list_road_board)
+
+    console.log("do - back board", back_board);
+    if (e.code == "ArrowLeft") {
+        slideLeft();
+        setTwo();
+    } else if (e.code == "ArrowRight") {
+        slideRight();
+        setTwo();
+    } else if (e.code == "ArrowUp") {
+        slideUp();
+        setTwo();
+    } else if (e.code == "ArrowDown") {
+        slideDown();
+        setTwo();
     }
 
-    // Rotate board back upright
-    board = this.rotateLeft(board);
-
-    return {board, score};
-  }
-  
-  moveRight(inputBoard) {
-    let board = [];
-    let score = 0;
-
-    // Shift all numbers to the right
-    for (let r = 0; r < inputBoard.length; r++) {
-      let row = [];      
-      for (let c = 0; c < inputBoard[r].length; c++) {
-        let current = inputBoard[r][c];
-        (current === 0) ? row.unshift(current) : row.push(current);
-      }
-      board.push(row);
+    saveGame();
+    console.log("posle - board", board);
+    document.getElementById("score").innerText = score;
+    if (isGameOver()) {
+        alert("Игра окончена! Нажмите 'OK', чтобы начать заново.");
+        resetGame();
+        location.reload();
     }
+});
 
-    // Combine numbers and shift to right
-    for (let r = 0; r < board.length; r++) {
-      for (let c = board[r].length - 1; c >= 0; c--) {
-        if (board[r][c] > 0 && board[r][c] === board[r][c - 1]) {
-          board[r][c] = board[r][c] * 2;
-          board[r][c - 1] = 0;
-          score += board[r][c];
-        } else if (board[r][c] === 0 && board[r][c - 1] > 0) {
-          board[r][c] = board[r][c - 1];
-          board[r][c - 1] = 0;
+function updateBoardView() {
+    console.log("updateBoardView()")
+
+    document.getElementById("board").innerHTML = '';
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns; c++) {
+            let tile = document.createElement("div");
+            tile.id = r.toString() + "-" + c.toString();
+            let num = board[r][c];
+            updateTile(tile, num);
+            document.getElementById("board").append(tile);
         }
-      }
     }
+    console.log("Board new", board)
+}
 
-    return {board, score};
-  }
-  
-  moveDown(inputBoard) {
-    let rotatedRight = this.rotateRight(inputBoard);
-    let board = [];
-    let score = 0;
+function filterZero(row) {
+    return row.filter(num => num != 0);
+}
 
-    // Shift all numbers to the left
-    for (let r = 0; r < rotatedRight.length; r++) {
-      let row = [];      
-      for (let c = rotatedRight[r].length - 1; c >= 0; c--) {
-        let current = rotatedRight[r][c];
-        (current === 0) ? row.push(current) : row.unshift(current);
-      }
-      board.push(row);
-    }
-
-    // Combine numbers and shift to left
-    for (let r = 0; r < board.length; r++) {
-      for (let c = 0; c < board.length; c++) {
-        if (board[r][c] > 0 && board[r][c] === board[r][c + 1]) {
-          board[r][c] = board[r][c] * 2;
-          board[r][c + 1] = 0;
-          score += board[r][c];
-        } else if (board[r][c] === 0 && board[r][c + 1] > 0) {
-          board[r][c] = board[r][c + 1];
-          board[r][c + 1] = 0;
+function slide(row) {
+    row = filterZero(row);
+    for (let i = 0; i < row.length - 1; i++) {
+        if (row[i] == row[i + 1]) {
+            row[i] *= 2;
+            row[i + 1] = 0;
+            score += row[i];
         }
-      }
     }
-
-    // Rotate board back upright
-    board = this.rotateLeft(board);
-
-    return {board, score};
-  }
-  
-  moveLeft(inputBoard) {
-    let board = [];
-    let score = 0;
-
-    // Shift all numbers to the left
-    for (let r = 0; r < inputBoard.length; r++) {
-      let row = [];      
-      for (let c = inputBoard[r].length - 1; c >= 0; c--) {
-        let current = inputBoard[r][c];
-        (current === 0) ? row.push(current) : row.unshift(current);
-      }
-      board.push(row);
+    row = filterZero(row);
+    while (row.length < columns) {
+        row.push(0);
     }
+    return row;
+}
 
-    // Combine numbers and shift to left
-    for (let r = 0; r < board.length; r++) {
-      for (let c = 0; c < board.length; c++) {
-        if (board[r][c] > 0 && board[r][c] === board[r][c + 1]) {
-          board[r][c] = board[r][c] * 2;
-          board[r][c + 1] = 0;
-          score += board[r][c];
-        } else if (board[r][c] === 0 && board[r][c + 1] > 0) {
-          board[r][c] = board[r][c + 1];
-          board[r][c + 1] = 0;
+function slideLeft() {
+    for (let r = 0; r < rows; r++) {
+        let row = board[r];
+        row = slide(row);
+        board[r] = row;
+        for (let c = 0; c < columns; c++) {
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
         }
-      }
     }
-    
-    return {board, score};
-  }
-  
-  rotateRight(matrix) {
-    let result = [];
-	
-  	for (let c = 0; c < matrix.length; c++) {
-	  	let row = [];
-	  	for (let r = matrix.length - 1; r >= 0; r--) {
-			  row.push(matrix[r][c]);
-		  }
-      result.push(row);
-	  }
-	
-	  return result;
-  }
-  
-  rotateLeft(matrix) {
-  	let result = [];
+}
 
-    for (let c = matrix.length - 1; c >= 0; c--) {
-      let row = [];
-      for (let r = matrix.length - 1; r >= 0; r--) {
-        row.unshift(matrix[r][c]);
-      }
-      result.push(row);
+function slideRight() {
+    for (let r = 0; r < rows; r++) {
+        let row = board[r];
+        row.reverse();
+        row = slide(row);
+        board[r] = row.reverse();
+        for (let c = 0; c < columns; c++) {
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
+        }
     }
+}
 
-    return result;
-  }
-  
-  // Check to see if there are any moves left
-  checkForGameOver(board) {
-    let moves = [
-      this.boardMoved(board, this.moveUp(board).board),
-      this.boardMoved(board, this.moveRight(board).board),
-      this.boardMoved(board, this.moveDown(board).board),
-      this.boardMoved(board, this.moveLeft(board).board)
-    ];
-    
-    return (moves.includes(true)) ? false : true;
-  }
-  
-  componentWillMount() {
-    this.initBoard();  
-    const body = document.querySelector('body');
-    body.addEventListener('keydown', this.handleKeyDown.bind(this));
-  }
-  
-  handleKeyDown(e) {
-    const up = 38;
-    const right = 39;
-    const down = 40;
-    const left = 37
-    const n = 78;
-    
-    if (e.keyCode === up) {
-      this.move('up');
-    } else if (e.keyCode === right) {
-      this.move('right');
-    } else if (e.keyCode === down) {
-      this.move('down');
-    } else if (e.keyCode === left) {
-      this.move('left');
-    } else if (e.keyCode === n) {
-      this.initBoard();
+function slideUp() {
+    for (let c = 0; c < columns; c++) {
+        let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
+        row = slide(row);
+        for (let r = 0; r < rows; r++) {
+            board[r][c] = row[r];
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
+        }
     }
-  }
-    
-  render() {
-    return (
-      <div>        
-        <div className="button" onClick={() => {this.initBoard()}}>New Game</div>
-                
-        <div className="buttons">
-          <div className="button" onClick={() => {this.move('up')}}>Up</div>
-          <div className="button" onClick={() => {this.move('right')}}>Right</div>
-          <div className="button" onClick={() => {this.move('down')}}>Down</div>
-          <div className="button" onClick={() => {this.move('left')}}>Left</div>
-        </div>
-        
-        <div className="score">Score: {this.state.score}</div>
-        
-        <table>
-          {this.state.board.map((row, i) => (<Row key={i} row={row} />))}
-        </table>
-        
-        <p>{this.state.message}</p>
-      </div>
-    );
-  }
-};
+}
 
-const Row = ({ row }) => {
-  return (
-    <tr>
-      {row.map((cell, i) => (<Cell key={i} cellValue={cell} />))}
-    </tr>
-  );
-};
+function slideDown() {
+    for (let c = 0; c < columns; c++) {
+        let row = [board[0][c], board[1][c], board[2][c], board[3][c]];
+        row.reverse();
+        row = slide(row);
+        row.reverse();
+        for (let r = 0; r < rows; r++) {
+            board[r][c] = row[r];
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            let num = board[r][c];
+            updateTile(tile, num);
+        }
+    }
+}
 
-const Cell = ({ cellValue }) => {
-  let color = 'cell';
-  let value = (cellValue === 0) ? '' : cellValue;
-  if (value) {
-    color += ` color-${value}`;
-  }
+function setTwo() {
+    if (!hasEmptyTile()) {
+        return;
+    }
+    let found = false;
+    while (!found) {
+        let r = Math.floor(Math.random() * rows);
+        let c = Math.floor(Math.random() * columns);
+        if (board[r][c] == 0) {
+            board[r][c] = 2;
+            let tile = document.getElementById(r.toString() + "-" + c.toString());
+            tile.innerText = "2";
+            tile.classList.add("x2");
+            found = true;
+        }
+    }
+}
 
-  return (
-    <td>
-      <div className={color}>
-        <div className="number">{value}</div>
-      </div>
-    </td>
-  );
-};
 
-ReactDOM.render(<App />, document.getElementById('main'));
+function hasEmptyTile() {
+    let count = 0;
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns; c++) {
+            if (board[r][c] == 0) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+function isGameOver() {
+    if (hasEmptyTile()) {
+        return false;
+    }
+    for (let r = 0; r < rows; r++) {
+        for (let c = 0; c < columns; c++) {
+            if (c < columns - 1 && board[r][c] === board[r][c + 1]) {
+                return false;
+            }
+            if (r < rows - 1 && board[r][c] === board[r + 1][c]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+function updateTile(tile, num) {
+    tile.innerText = "";
+    tile.classList.value = "";
+    tile.classList.add("tile");
+    if (num > 0) {
+        tile.innerText = num.toString();
+        if (num <= 4096) {
+            tile.classList.add("x" + num.toString());
+        } else {
+            tile.classList.add("x8192");
+        }
+    }
+}
+
+function loadGame() {
+    const savedBoard = localStorage.getItem("board");
+    const savedScore = parseInt(localStorage.getItem("score"))
+    board = JSON.parse(savedBoard);
+    score = JSON.parse(savedScore);
+    updateBoardView();
+}
+
+function saveGame() {
+    localStorage.setItem("board", JSON.stringify(board));
+    localStorage.setItem("score", score.toString());
+    if (score > best_score)
+        localStorage.setItem("best_score", score.toString());
+}
+
+function resetGame() {
+    localStorage.removeItem("board");
+    localStorage.removeItem("score");
+}

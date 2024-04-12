@@ -1,112 +1,283 @@
 body {
-  font-family: 'Lucida Sans Unicode';
-  background: #43cea2;
-  background: -webkit-linear-gradient(to left, #43cea2 , #185a9d);
-  background: linear-gradient(to left, #43cea2 , #185a9d);
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
 }
 
-h1 {
-  text-align: center;
-  font-size: 50px;
+hr {
+    width: 500px;
 }
 
-p {
-  text-align: center;
+.back-button {
+    padding: 0.5rem!important;
 }
 
-table {
-  margin: 0 auto;
+#board {
+    width: 400px;
+    height: 400px;
+    background-color: #cdc1b5;
+    border: 6px solid #bbada0;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
 }
 
-.buttons {
-  margin: 0 auto;
-  display: flex;
-  width: 500px;
+.tile {
+    width: 90px;
+    height: 90px;
+    border: 5px solid #bbada0;
+    font-size: 40px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.button {
-  background-color: #303030;
-  color: #50C8FF;
-  height: 30px;
-  width: 100px;
-  border-radius: 5px;
-  margin: 0 auto;
-  margin-bottom: 25px;
-  text-align: center;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  transition: background-color 0.5s, color 0.5s;
+
+/* colored tiles */
+
+.x2 {
+    background-color: #eee4da;
+    color: #727371;
 }
 
-.button:hover {
-  background-color: #50C8FF;
-  color: #303030;
-  transition: background-color 0.5s, color 0.5s;
+.x4 {
+    background-color: #ece0ca;
+    color: #727371;
 }
 
-.cell {
-  height: 100px;
-  width: 100px;
-  background-color: #303030;
-  border-radius: 5px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.x8 {
+    background-color: #f4b17a;
+    color: white;
 }
 
-.color-2 {
-  background-color: #50C8FF;
+.x16 {
+    background-color: #f59575;
+    color: white;
 }
 
-.color-4 {
-  background-color: green;
+.x32 {
+    background-color: #f57c5f;
+    color: white;
 }
 
-.color-8 {
-  background-color: red;
+.x64 {
+    background-color: #f65d3b;
+    color: white;
 }
 
-.color-16 {
-  background-color: orange;
+.x128 {
+    background-color: #edce71;
+    color: white;
 }
 
-.color-32 {
-  background-color: yellow;
+.x256 {
+    background-color: #edcc63;
+    color: white;
 }
 
-.color-64 {
-  background-color: blue;
+.x512 {
+    background-color: #edc651;
+    color: white;
 }
 
-.color-128 {
-  background-color: purple;
+.x1024 {
+    background-color: #eec744;
+    color: white;
 }
 
-.color-256 {
-  background-color: pink;
+.x2048 {
+    background-color: #ecc230;
+    color: white;
 }
 
-.color-512 {
-  background-color: #50C8FF;
+.x4096 {
+    background-color: #fe3d3d;
+    color: white;
 }
 
-.color-1024 {
-  background-color: green;
+.x8192 {
+    background-color: #ff2020;
+    color: white;
 }
 
-.color-2048 {
-  background-color: blue;
+.btn {
+    border: none;
+    font-family: 'Lato';
+    font-size: inherit;
+    color: inherit;
+    background: none;
+    cursor: pointer;
+    padding: 25px 80px;
+    display: inline-block;
+    margin: 15px 30px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    outline: none;
+    position: relative;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
 }
 
-.number {
-  color: #FFF;
-  font-size: 35px;
+.btn:after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    -webkit-transition: all 0.3s;
+    -moz-transition: all 0.3s;
+    transition: all 0.3s;
 }
 
-.score {
-  text-align: center;
-  margin-bottom: 20px;
+
+/* Pseudo elements for icons */
+
+.btn:before {
+    font-family: 'FontAwesome';
+    speak: none;
+    font-style: normal;
+    font-weight: normal;
+    font-variant: normal;
+    text-transform: none;
+    line-height: 1;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+}
+
+
+/* Icon separator */
+
+.btn-sep {
+    padding: 25px 60px 25px 120px;
+}
+
+.btn-sep:before {
+    background: rgba(0, 0, 0, 0.15);
+}
+
+
+/* Button 1 */
+
+.btn-1 {
+    background: #3498db;
+    color: #fff;
+}
+
+.btn-1:hover {
+    background: #2980b9;
+}
+
+.btn-1:active {
+    background: #2980b9;
+    top: 2px;
+}
+
+.btn-1:before {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    top: 0;
+    line-height: 3;
+    font-size: 140%;
+    width: 60px;
+}
+
+
+/* Button 2 */
+
+.btn-2 {
+    background: #2ecc71;
+    color: #fff;
+}
+
+.btn-2:hover {
+    background: #27ae60;
+}
+
+.btn-2:active {
+    background: #27ae60;
+    top: 2px;
+}
+
+.btn-2:before {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    top: 0;
+    line-height: 3;
+    font-size: 140%;
+    width: 60px;
+}
+
+
+/* Button 3 */
+
+.btn-3 {
+    background: #e74c3c;
+    color: #fff;
+}
+
+.btn-3:hover {
+    background: #c0392b;
+}
+
+.btn-3:active {
+    background: #c0392b;
+    top: 2px;
+}
+
+.btn-3:before {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    top: 0;
+    line-height: 3;
+    font-size: 140%;
+    width: 60px;
+}
+
+
+/* Button 3 */
+
+.btn-4 {
+    background: #34495e;
+    color: #fff;
+}
+
+.btn-4:hover {
+    background: #2c3e50;
+}
+
+.btn-4:active {
+    background: #2c3e50;
+    top: 2px;
+}
+
+.btn-4:before {
+    position: absolute;
+    height: 100%;
+    left: 0;
+    top: 0;
+    line-height: 3;
+    font-size: 140%;
+    width: 60px;
+}
+
+
+/* Icons */
+
+.icon-cart:before {
+    content: "\f07a";
+}
+
+.icon-heart:before {
+    content: "\f55a";
+}
+
+.icon-info:before {
+    content: "\f05a";
+}
+
+.icon-send:before {
+    content: "\f1d8";
 }
